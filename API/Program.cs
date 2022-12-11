@@ -1,9 +1,12 @@
 using System.Text;
 using API.Services;
 using API.Models;
+using API.Authorizations;
+using System.Security.Claims; 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,20 +24,33 @@ builder.Services.AddCors(options => {
     });
 });
 
+
+// https://www.red-gate.com/simple-talk/development/dotnet-development/policy-based-authorization-in-asp-net-core-a-deep-dive/
+builder.Services.AddSingleton<IAuthorizationHandler, IsAdminAuthorizationHandler>();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminPolicy", policy =>  
+    {  
+        bool adminRequirement = true;
+        policy.Requirements.Add(new IsAdminRequirement(adminRequirement));
+    });
+});
+
 builder.Services.AddEntityFrameworkSqlite();
 
 builder.Services.AddDbContext<Database>();
+builder.Services.AddDbContext<DatabaseIdentities>();
 
 builder.Services.AddIdentityCore<AppUser>(options =>
 {
     options.Password.RequireNonAlphanumeric = false;
 })
-.AddEntityFrameworkStores<Database>()
+.AddEntityFrameworkStores<DatabaseIdentities>()
 .AddSignInManager<SignInManager<AppUser>>();
 
 builder.Services.AddScoped<TokenService>();
 
-var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("KatzKeyz123z"));
+var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("Katz Veryz Securez Keyz 123z"));
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 .AddJwtBearer(opt =>
 {

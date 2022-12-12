@@ -1,3 +1,12 @@
+/*
+
+By: Roman Krutikov
+
+Description: This class is used set up the API before it is built, and includes defining where
+             databases are, which kind of database is used, CORS settings, security, controllers,
+             and more.
+             
+*/
 using System.Text;
 using API.Services;
 using API.Models;

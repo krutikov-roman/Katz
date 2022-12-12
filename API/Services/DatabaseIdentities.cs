@@ -1,3 +1,12 @@
+/*
+
+By: Roman Krutikov
+
+Description: This class is used to store the Users database setup. This class will 
+             then be used by other controllers/services for logging users in and logging
+             them out with tokens.
+             
+*/
 using System;
 using System.Collections.Generic;
 using System.Linq;

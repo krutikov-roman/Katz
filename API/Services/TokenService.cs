@@ -1,3 +1,11 @@
+/*
+
+By: Roman Krutikov
+
+Description: This class is used for issuing bearer tokens to users, as well as handling 
+             hashing these tokens and handling logging in and logging out of the application.
+             
+*/
 using System;
 using System.Collections.Generic;
 using System.Linq;

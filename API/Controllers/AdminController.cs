@@ -1,3 +1,16 @@
+/*
+
+By: Roman Krutikov
+
+Description: This class is used for API endpoints that an Admin Page of the Cat Adoption website would use.
+             This mainly involves the listing, accepting and denying Cat Adoption Forms and Cats Put Up For
+             For Adoption Forms.
+             This class also includes testing methods for authorization, such as testing how the API would
+             response to requests with and without certain types of authentcation. (May be removed before final
+             submission).
+             
+*/
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +22,7 @@ using API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Net.Http.Headers;
 
 namespace API.Controllers
@@ -31,6 +45,8 @@ namespace API.Controllers
             _tokenService = tokenService; 
             _database = database;
         }
+
+        #region Login and Test Methods
 
         [HttpPost("signup")]
         public async Task<IActionResult> Signup (RegisterDto registerDto){
@@ -152,6 +168,324 @@ namespace API.Controllers
             };
             return Ok(responseDTOOk);
         }
+
+        #endregion
+
+        #region Cat Adoption Methods
+        [Authorize]
+        [Authorize("AdminPolicy")]
+        [HttpGet("getNewAdoptableCatForms")]
+        public IActionResult GetNewAdoptableCatForms()
+        {
+            var tokenAuthorization = Request.Headers[HeaderNames.Authorization].First();
+            if (!_tokenService.isTokenActive(tokenAuthorization)){
+                ResponseDTO responseDTOUnauthorized = new ResponseDTO() {
+                    Status= 401,
+                    Message= "Unauthorized token login..."
+                };
+                return Unauthorized(responseDTOUnauthorized);
+            }
+
+            IEnumerable<CatAdoptionForm> catAdoptionForms = _database.CatAdoptionForms.Where(x => x.FormStatus.Equals(FormStatus.New));
+            ResponseDTO responseDTOOk = new ResponseDTO() {
+                Status= 200,
+                Message= "Successfully fetched New Adoptable Cat Forms!",
+                Data = catAdoptionForms
+            };
+            return Ok(responseDTOOk);
+        }
+
+        [Authorize]
+        [Authorize("AdminPolicy")]
+        [HttpGet("getAcceptedAdoptableCatForms")]
+        public IActionResult GetAcceptedAdoptableCatForms()
+        {
+            var tokenAuthorization = Request.Headers[HeaderNames.Authorization].First();
+            if (!_tokenService.isTokenActive(tokenAuthorization)){
+                ResponseDTO responseDTOUnauthorized = new ResponseDTO() {
+                    Status= 401,
+                    Message= "Unauthorized token login..."
+                };
+                return Unauthorized(responseDTOUnauthorized);
+            }
+
+            IEnumerable<CatAdoptionForm> catAdoptionForms = _database.CatAdoptionForms.Where(x => x.FormStatus.Equals(FormStatus.Accepted));
+            ResponseDTO responseDTOOk = new ResponseDTO() {
+                Status= 200,
+                Message= "Successfully fetched Accepted Adoptable Cat Forms!",
+                Data = catAdoptionForms
+            };
+            return Ok(responseDTOOk);
+        }
+
+        [Authorize]
+        [Authorize("AdminPolicy")]
+        [HttpGet("getDeniedAdoptableCatForms")]
+        public IActionResult GetDeniedAdoptableCatForms()
+        {
+            var tokenAuthorization = Request.Headers[HeaderNames.Authorization].First();
+            if (!_tokenService.isTokenActive(tokenAuthorization)){
+                ResponseDTO responseDTOUnauthorized = new ResponseDTO() {
+                    Status= 401,
+                    Message= "Unauthorized token login..."
+                };
+                return Unauthorized(responseDTOUnauthorized);
+            }
+
+            IEnumerable<CatAdoptionForm> catAdoptionForms = _database.CatAdoptionForms.Where(x => x.FormStatus.Equals(FormStatus.Denied));
+            ResponseDTO responseDTOOk = new ResponseDTO() {
+                Status= 200,
+                Message= "Successfully fetched Denied Adoptable Cat Forms!",
+                Data = catAdoptionForms
+            };
+            return Ok(responseDTOOk);
+        }
+
+        [Authorize]
+        [Authorize("AdminPolicy")]
+        [HttpPost("acceptAdoptableCatForm")]
+        public IActionResult AcceptAdoptableCatForm(CatAdoptionForm catAdoptionForm)
+        {
+            var tokenAuthorization = Request.Headers[HeaderNames.Authorization].First();
+            if (!_tokenService.isTokenActive(tokenAuthorization)){
+                ResponseDTO responseDTOUnauthorized = new ResponseDTO() {
+                    Status= 401,
+                    Message= "Unauthorized token login..."
+                };
+                return Unauthorized(responseDTOUnauthorized);
+            }
+
+            CatAdoptionForm? catAdoptionFormFromDatabase = _database.CatAdoptionForms
+                .Include(x => x.Cat).FirstOrDefault(x => x.Id.Equals(catAdoptionForm.Id));
+            if (catAdoptionFormFromDatabase == null){
+                ResponseDTO responseDTONotFound = new ResponseDTO() {
+                    Status= 404,
+                    Message= $"Cat Adoption Form with Guid '${catAdoptionForm.Id}' not found...",
+                };
+                return NotFound(responseDTONotFound);
+            }
+            catAdoptionFormFromDatabase.FormStatus = FormStatus.Accepted;
+            
+            Cat? catFromAdoptionFormFromDatabase = catAdoptionFormFromDatabase.Cat;
+            if (catFromAdoptionFormFromDatabase == null){
+                ResponseDTO responseDTONotFound = new ResponseDTO() {
+                    Status= 404,
+                    Message= "Cat specified in adoption form was null...",
+                };
+                return NotFound(responseDTONotFound);
+            }
+            catFromAdoptionFormFromDatabase.CatStatus = CatStatus.Adopted;
+
+            ResponseDTO responseDTOOk = new ResponseDTO() {
+                Status= 200,
+                Message= "Successfully approved cat adoptable form!",
+            };
+
+            _database.SaveChanges();
+            return Ok(responseDTOOk);
+        }
+
+        [Authorize]
+        [Authorize("AdminPolicy")]
+        [HttpPost("denyAdoptableCatForm")]
+        public IActionResult DenyAdoptableCatForm(CatAdoptionForm catAdoptionForm)
+        {
+            var tokenAuthorization = Request.Headers[HeaderNames.Authorization].First();
+            if (!_tokenService.isTokenActive(tokenAuthorization)){
+                ResponseDTO responseDTOUnauthorized = new ResponseDTO() {
+                    Status= 401,
+                    Message= "Unauthorized token login..."
+                };
+                return Unauthorized(responseDTOUnauthorized);
+            }
+
+            CatAdoptionForm? catAdoptionFormFromDatabase = _database.CatAdoptionForms
+                .Include(x => x.Cat).FirstOrDefault(x => x.Id.Equals(catAdoptionForm.Id));
+            if (catAdoptionFormFromDatabase == null){
+                ResponseDTO responseDTONotFound = new ResponseDTO() {
+                    Status= 404,
+                    Message= $"Cat Adoption Form with Guid '{catAdoptionForm.Id}' not found...",
+                };
+                return NotFound(responseDTONotFound);
+            }
+            catAdoptionFormFromDatabase.FormStatus = FormStatus.Denied;
+            
+            Cat? catFromAdoptionFormFromDatabase = catAdoptionFormFromDatabase.Cat;
+            if (catFromAdoptionFormFromDatabase == null){
+                ResponseDTO responseDTONotFound = new ResponseDTO() {
+                    Status= 404,
+                    Message= "Cat specified in adoption form was null...",
+                };
+                return NotFound(responseDTONotFound);
+            }
+            catFromAdoptionFormFromDatabase.CatStatus = CatStatus.WaitingForAdoption;
+
+            ResponseDTO responseDTOOk = new ResponseDTO() {
+                Status= 200,
+                Message= "Successfully denied cat adoptable form!",
+            };
+
+            _database.SaveChanges();
+            return Ok(responseDTOOk);
+        }
+
+        #endregion
+
+        #region Cats Up For Adoption Region
+        [Authorize]
+        [Authorize("AdminPolicy")]
+        [HttpGet("getNewCatsUpForAdoptionForms")]
+        public IActionResult GetNewCatsUpForAdoptionForms() {
+            var tokenAuthorization = Request.Headers[HeaderNames.Authorization].First();
+            if (!_tokenService.isTokenActive(tokenAuthorization)){
+                ResponseDTO responseDTOUnauthorized = new ResponseDTO() {
+                    Status= 401,
+                    Message= "Unauthorized token login..."
+                };
+                return Unauthorized(responseDTOUnauthorized);
+            }
+
+            IEnumerable<CatPutUpForAdoptionForm> catAdoptionForms = _database.CatPutUpForAdoptionForms.Where(x => x.FormStatus.Equals(FormStatus.New));
+            ResponseDTO responseDTOOk = new ResponseDTO() {
+                Status= 200,
+                Message= "Successfully fetched New Cats Up For Adoption Forms!",
+                Data = catAdoptionForms
+            };
+            return Ok(responseDTOOk);
+        }
+
+        [Authorize]
+        [Authorize("AdminPolicy")]
+        [HttpGet("getAcceptedCatsUpForAdoptionForms")]
+        public IActionResult GetAcceptedCatsUpForAdoptionForms() {
+            var tokenAuthorization = Request.Headers[HeaderNames.Authorization].First();
+            if (!_tokenService.isTokenActive(tokenAuthorization)){
+                ResponseDTO responseDTOUnauthorized = new ResponseDTO() {
+                    Status= 401,
+                    Message= "Unauthorized token login..."
+                };
+                return Unauthorized(responseDTOUnauthorized);
+            }
+
+            IEnumerable<CatPutUpForAdoptionForm> catAdoptionForms = _database.CatPutUpForAdoptionForms.Where(x => x.FormStatus.Equals(FormStatus.Accepted));
+            ResponseDTO responseDTOOk = new ResponseDTO() {
+                Status= 200,
+                Message= "Successfully fetched Accepted Cats Up For Adoption Forms!",
+                Data = catAdoptionForms
+            };
+            return Ok(responseDTOOk);
+        }
+
+        [Authorize]
+        [Authorize("AdminPolicy")]
+        [HttpGet("getDeniedCatUpForAdoptionForm")]
+        public IActionResult GetDeniedCatsUpForAdoptionForms() {
+            var tokenAuthorization = Request.Headers[HeaderNames.Authorization].First();
+            if (!_tokenService.isTokenActive(tokenAuthorization)){
+                ResponseDTO responseDTOUnauthorized = new ResponseDTO() {
+                    Status= 401,
+                    Message= "Unauthorized token login..."
+                };
+                return Unauthorized(responseDTOUnauthorized);
+            }
+
+            IEnumerable<CatPutUpForAdoptionForm> catAdoptionForms = _database.CatPutUpForAdoptionForms.Where(x => x.FormStatus.Equals(FormStatus.Denied));
+            ResponseDTO responseDTOOk = new ResponseDTO() {
+                Status= 200,
+                Message= "Successfully fetched Denied Cats Up For Adoption Forms!",
+                Data = catAdoptionForms
+            };
+            return Ok(responseDTOOk);
+        }
+
+        [Authorize]
+        [Authorize("AdminPolicy")]
+        [HttpPost("acceptCatUpForAdoptionForm")]
+        public IActionResult AcceptAdoptableCatForm(CatPutUpForAdoptionForm catPutUpForAdoptionForm)
+        {
+            var tokenAuthorization = Request.Headers[HeaderNames.Authorization].First();
+            if (!_tokenService.isTokenActive(tokenAuthorization)){
+                ResponseDTO responseDTOUnauthorized = new ResponseDTO() {
+                    Status= 401,
+                    Message= "Unauthorized token login..."
+                };
+                return Unauthorized(responseDTOUnauthorized);
+            }
+
+            CatPutUpForAdoptionForm? catPutUpForAdoptionFormFromDatabase = _database.CatPutUpForAdoptionForms
+                .Include(x => x.Cat).FirstOrDefault(x => x.Id.Equals(catPutUpForAdoptionForm.Id));
+            if (catPutUpForAdoptionFormFromDatabase == null){
+                ResponseDTO responseDTONotFound = new ResponseDTO() {
+                    Status= 404,
+                    Message= $"Cat Put Up For Adoption Form with Guid '{catPutUpForAdoptionForm.Id}' not found...",
+                };
+                return NotFound(responseDTONotFound);
+            }
+            catPutUpForAdoptionFormFromDatabase.FormStatus = FormStatus.Accepted;
+            
+            Cat? catFromAdoptionFormFromDatabase = catPutUpForAdoptionFormFromDatabase.Cat;
+            if (catFromAdoptionFormFromDatabase == null){
+                ResponseDTO responseDTONotFound = new ResponseDTO() {
+                    Status= 404,
+                    Message= "Cat specified in adoption form was null...",
+                };
+                return NotFound(responseDTONotFound);
+            }
+            catFromAdoptionFormFromDatabase.CatStatus = CatStatus.WaitingForAdoption;
+
+            ResponseDTO responseDTOOk = new ResponseDTO() {
+                Status= 200,
+                Message= "Successfully approved cat put up for adoptable form!",
+            };
+
+            _database.SaveChanges();
+            return Ok(responseDTOOk);
+        }
+
+        [Authorize]
+        [Authorize("AdminPolicy")]
+        [HttpPost("denyCatUpForAdoptionForm")]
+        public IActionResult DenyAdoptableCatForm(CatPutUpForAdoptionForm catPutUpForAdoptionForm)
+        {
+            var tokenAuthorization = Request.Headers[HeaderNames.Authorization].First();
+            if (!_tokenService.isTokenActive(tokenAuthorization)){
+                ResponseDTO responseDTOUnauthorized = new ResponseDTO() {
+                    Status= 401,
+                    Message= "Unauthorized token login..."
+                };
+                return Unauthorized(responseDTOUnauthorized);
+            }
+
+            CatPutUpForAdoptionForm? catUpForAdoptionFormFromDatabase = _database.CatPutUpForAdoptionForms
+                .Include(x => x.Cat).FirstOrDefault(x => x.Id.Equals(catPutUpForAdoptionForm.Id));
+            if (catUpForAdoptionFormFromDatabase == null){
+                ResponseDTO responseDTONotFound = new ResponseDTO() {
+                    Status= 404,
+                    Message= "Cat Adoption Form with Guid 'catAdoptionForm.Id' not found...",
+                };
+                return NotFound(responseDTONotFound);
+            }
+            catUpForAdoptionFormFromDatabase.FormStatus = FormStatus.Denied;
+            
+            Cat? catFromAdoptionFormFromDatabase = catUpForAdoptionFormFromDatabase.Cat;
+            if (catFromAdoptionFormFromDatabase == null){
+                ResponseDTO responseDTONotFound = new ResponseDTO() {
+                    Status= 404,
+                    Message= "Cat specified in adoption form was null...",
+                };
+                return NotFound(responseDTONotFound);
+            }
+            catFromAdoptionFormFromDatabase.CatStatus = CatStatus.Denied;
+
+            ResponseDTO responseDTOOk = new ResponseDTO() {
+                Status= 200,
+                Message= "Successfully denied cat put up for adoptable form!",
+            };
+
+            _database.SaveChanges();
+            return Ok(responseDTOOk);
+        }
+        #endregion
 
     }
 }

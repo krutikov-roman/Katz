@@ -1,3 +1,12 @@
+/*
+
+By: Roman Krutikov
+
+Description: This class is used alongside the IsAdminRequirement class is used to create an 
+             authorization policy that would only allow Admin Users to access certain API endpoints.
+             
+*/
+
 using System;
 using System.Collections.Generic;
 using System.Linq;

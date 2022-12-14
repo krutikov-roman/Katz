@@ -300,7 +300,7 @@ namespace API.Controllers
         [Authorize]
         [Authorize("AdminPolicy")]
         [HttpPost("acceptAdoptableCatForm")]
-        public async Task<IActionResult> AcceptAdoptableCatForm(CatAdoptionForm catAdoptionForm)
+        public async Task<IActionResult> AcceptAdoptableCatForm(SearchFormDTO catAdoptionForm)
         {
 
             try {
@@ -377,7 +377,7 @@ namespace API.Controllers
         [Authorize]
         [Authorize("AdminPolicy")]
         [HttpPost("denyAdoptableCatForm")]
-        public IActionResult DenyAdoptableCatForm(CatAdoptionForm catAdoptionForm)
+        public IActionResult DenyAdoptableCatForm(SearchFormDTO catAdoptionForm)
         {
 
             try {
@@ -527,7 +527,7 @@ namespace API.Controllers
         // This method gets all denied forms that were submitted for putting a cat up for adoption
         [Authorize]
         [Authorize("AdminPolicy")]
-        [HttpGet("getDeniedCatUpForAdoptionForm")]
+        [HttpGet("getDeniedCatsUpForAdoptionForms")]
         public IActionResult GetDeniedCatsUpForAdoptionForms() {
             try {
                 // Custom way of checking for if a signed out token is being used to log in
@@ -541,7 +541,7 @@ namespace API.Controllers
                 }
 
                 // Fetches all denied cats up for adoption forms from the database
-                IEnumerable<CatPutUpForAdoptionForm> catAdoptionForms = _database.CatPutUpForAdoptionForms.Where(x => x.FormStatus.Equals(FormStatus.Denied));
+                IEnumerable<CatPutUpForAdoptionForm> catAdoptionForms = _database.CatPutUpForAdoptionForms.Include(x => x.Cat).Where(x => x.FormStatus.Equals(FormStatus.Denied));
                 ResponseDTO responseDTOOk = new ResponseDTO() {
                     Status= 200,
                     Message= "Successfully fetched Denied Cats Up For Adoption Forms!",
@@ -565,7 +565,7 @@ namespace API.Controllers
         [Authorize]
         [Authorize("AdminPolicy")]
         [HttpPost("acceptCatUpForAdoptionForm")]
-        public IActionResult AcceptAdoptableCatForm(CatPutUpForAdoptionForm catPutUpForAdoptionForm)
+        public IActionResult AcceptCatUpForAdoptionForm(SearchFormDTO catPutUpForAdoptionForm)
         {
             try {
                 // Custom way of checking for if a signed out token is being used to log in
@@ -641,7 +641,7 @@ namespace API.Controllers
         [Authorize]
         [Authorize("AdminPolicy")]
         [HttpPost("denyCatUpForAdoptionForm")]
-        public IActionResult DenyAdoptableCatForm(CatPutUpForAdoptionForm catPutUpForAdoptionForm)
+        public IActionResult DenyCatUpForAdoptionForm(SearchFormDTO catPutUpForAdoptionForm)
         {
             try {
                 // Custom way of checking for if a signed out token is being used to log in

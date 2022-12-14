@@ -28,6 +28,8 @@ namespace API.Services
             _databaseIdentities = databaseIdentities; 
         }
 
+        // Creates a new bearer token for a user
+        // Then, it adds that created token (hashed + salted) to the token table to track active tokens
         public string CreateToken(AppUser user, string ipAddress)
         {
             var claims = new List<Claim> {
@@ -69,6 +71,7 @@ namespace API.Services
             return tokenWritten;
         }
 
+        // Revokes a token by removing the hashed version of it from the token table (if it exists)
         public void RevokeToken(string token){
             string tokenHashed = ComputeSha256Hash(token.ToString());
             LoggedInToken? databaseToken = _databaseIdentities.LoggedInTokens.FirstOrDefault(x => x.HashedToken.Equals(tokenHashed));
@@ -78,6 +81,7 @@ namespace API.Services
             }
         }
 
+        // Checks to see if a token is active by seeing if the hashed version of it is located within the token table
         public bool isTokenActive(string token){
             if (string.IsNullOrEmpty(token)){
                 return false;
@@ -91,6 +95,7 @@ namespace API.Services
         }
 
         // https://www.c-sharpcorner.com/article/compute-sha256-hash-in-c-sharp/
+        // Generates a SHA 256 hash of a string (+ salt)
         private string ComputeSha256Hash(string rawData)  
         {    
             using (SHA256 sha256Hash = SHA256.Create())  

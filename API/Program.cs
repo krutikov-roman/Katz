@@ -47,6 +47,7 @@ builder.Services.AddAuthorization(options =>
 
 builder.Services.AddEntityFrameworkSqlite();
 
+// Adding both the database used for forms and the one used for logins to the context
 builder.Services.AddDbContext<Database>();
 builder.Services.AddDbContext<DatabaseIdentities>();
 
@@ -81,6 +82,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+// Use open CORS policy
 app.UseCors("AcceptAllPolicy");
 
 app.UseAuthentication();

@@ -35,22 +35,34 @@ namespace API.Controllers
 
         private SignInManager<AppUser> _signInManager;
 
-        private TokenService _tokenService;
+        private ITokenService _tokenService;
 
-        private Database _database;
+        private IListableDatabase _database;
 
-        public AdminController (UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, TokenService tokenService, Database database){
+        public AdminController (UserManager<AppUser> userManager, SignInManager<AppUser> signInManager,
+             TokenService tokenService, Database database, ITokenService token2 = null, IListableDatabase data2 = null){
             _userManager = userManager;
             _signInManager = signInManager;
-            _tokenService = tokenService; 
+        
+            // Use regular database and tokenservice setup when using the API, and when testing, alternate interfaces can be used
+            // within the same constructor. This was done this way because the services don't seem to work when more than 1 constructor
+            // is present within a controller
             _database = database;
+            if (data2 != null){
+                _database = data2;
+            }
+
+            _tokenService = tokenService;
+            if (token2 != null){
+                _tokenService = token2;
+            }
         }
 
         #region Test Methods
 
         // Signs up a user (likely admin, but admin value set to false by default)
         [HttpPost("signup")]
-        public async Task<IActionResult> Signup (RegisterDto registerDto){
+        public async Task<IActionResult> Signup (RegisterDTO registerDto){
             var user = new AppUser {
                 Email = registerDto.Email,
                 UserName = registerDto.UserName,
@@ -88,10 +100,10 @@ namespace API.Controllers
         // Test to see if an API response is given when a bearer token of a valid user is used
         [Authorize]
         [HttpGet("secure")]
-        public IActionResult GetSecureText()
+        public IActionResult GetSecureText([FromHeader] string Authorization)
         {
             // Custom way of checking for if a signed out token is being used to log in
-            var tokenAuthorization = Request.Headers[HeaderNames.Authorization].First();
+            var tokenAuthorization = Authorization;
             if (!_tokenService.isTokenActive(tokenAuthorization)){
                 ResponseDTO responseDTOUnauthorized = new ResponseDTO() {
                     Status= 401,
@@ -111,10 +123,10 @@ namespace API.Controllers
         [Authorize]
         [Authorize("AdminPolicy")]
         [HttpGet("secureAdmin")]
-        public IActionResult GetSecureText2()
+        public IActionResult GetSecureText2([FromHeader] string Authorization)
         {
             // Custom way of checking for if a signed out token is being used to log in
-            var tokenAuthorization = Request.Headers[HeaderNames.Authorization].First();
+            var tokenAuthorization = Authorization;
             if (!_tokenService.isTokenActive(tokenAuthorization)){
                 ResponseDTO responseDTOUnauthorized = new ResponseDTO() {
                     Status= 401,
@@ -136,7 +148,7 @@ namespace API.Controllers
         
         // Logs a user (likely admin) in and returns a bearer token
         [HttpPost("login")]
-        public async Task<IActionResult> LoginAsync(LoginDto loginDto)
+        public async Task<IActionResult> LoginAsync(LoginDTO loginDto)
         {
             var user = await _userManager.FindByEmailAsync(loginDto.Email);
             if (user==null) {
@@ -188,12 +200,12 @@ namespace API.Controllers
         [Authorize]
         [Authorize("AdminPolicy")]
         [HttpGet("getNewAdoptableCatForms")]
-        public IActionResult GetNewAdoptableCatForms()
+        public IActionResult GetNewAdoptableCatForms([FromHeader] string Authorization)
         {
 
             try {
                 // Custom way of checking for if a signed out token is being used to log in
-                var tokenAuthorization = Request.Headers[HeaderNames.Authorization].First();
+                var tokenAuthorization = Authorization;
                 if (!_tokenService.isTokenActive(tokenAuthorization)){
                     ResponseDTO responseDTOUnauthorized = new ResponseDTO() {
                         Status= 401,
@@ -203,7 +215,7 @@ namespace API.Controllers
                 }
 
                 // Fetches all new cat adoption forms from the database
-                IEnumerable<CatAdoptionForm> catAdoptionForms = _database.CatAdoptionForms.Include(x => x.Cat).Where(x => x.FormStatus.Equals(FormStatus.New));
+                IEnumerable<CatAdoptionForm> catAdoptionForms = _database.GetCatAdoptionFormsAsList(true).Where(x => x.FormStatus.Equals(FormStatus.New));
                 ResponseDTO responseDTOOk = new ResponseDTO() {
                     Status= 200,
                     Message= "Successfully fetched New Adoptable Cat Forms!",
@@ -225,11 +237,11 @@ namespace API.Controllers
         [Authorize]
         [Authorize("AdminPolicy")]
         [HttpGet("getAcceptedAdoptableCatForms")]
-        public IActionResult GetAcceptedAdoptableCatForms()
+        public IActionResult GetAcceptedAdoptableCatForms([FromHeader] string Authorization)
         {
             try {
                 // Custom way of checking for if a signed out token is being used to log in
-                var tokenAuthorization = Request.Headers[HeaderNames.Authorization].First();
+                var tokenAuthorization = Authorization;
                 if (!_tokenService.isTokenActive(tokenAuthorization)){
                     ResponseDTO responseDTOUnauthorized = new ResponseDTO() {
                         Status= 401,
@@ -239,7 +251,7 @@ namespace API.Controllers
                 }
 
                 // Fetches all accepted cat adoption forms from the database
-                IEnumerable<CatAdoptionForm> catAdoptionForms = _database.CatAdoptionForms.Include(x => x.Cat).Where(x => x.FormStatus.Equals(FormStatus.Accepted));
+                IEnumerable<CatAdoptionForm> catAdoptionForms = _database.GetCatAdoptionFormsAsList(true).Where(x => x.FormStatus.Equals(FormStatus.Accepted));
                 ResponseDTO responseDTOOk = new ResponseDTO() {
                     Status= 200,
                     Message= "Successfully fetched Accepted Adoptable Cat Forms!",
@@ -261,12 +273,12 @@ namespace API.Controllers
         [Authorize]
         [Authorize("AdminPolicy")]
         [HttpGet("getDeniedAdoptableCatForms")]
-        public IActionResult GetDeniedAdoptableCatForms()
+        public IActionResult GetDeniedAdoptableCatForms([FromHeader] string Authorization)
         {
 
             try {
                 // Custom way of checking for if a signed out token is being used to log in
-                var tokenAuthorization = Request.Headers[HeaderNames.Authorization].First();
+                var tokenAuthorization = Authorization;
                 if (!_tokenService.isTokenActive(tokenAuthorization)){
                     ResponseDTO responseDTOUnauthorized = new ResponseDTO() {
                         Status= 401,
@@ -276,7 +288,7 @@ namespace API.Controllers
                 }
 
                 // Fetches all denied cat adoption forms from the database
-                IEnumerable<CatAdoptionForm> catAdoptionForms = _database.CatAdoptionForms.Include(x => x.Cat).Where(x => x.FormStatus.Equals(FormStatus.Denied));
+                IEnumerable<CatAdoptionForm> catAdoptionForms = _database.GetCatAdoptionFormsAsList(true).Where(x => x.FormStatus.Equals(FormStatus.Denied));
                 ResponseDTO responseDTOOk = new ResponseDTO() {
                     Status= 200,
                     Message= "Successfully fetched Denied Adoptable Cat Forms!",
@@ -300,12 +312,12 @@ namespace API.Controllers
         [Authorize]
         [Authorize("AdminPolicy")]
         [HttpPost("acceptAdoptableCatForm")]
-        public async Task<IActionResult> AcceptAdoptableCatForm(SearchFormDTO catAdoptionForm)
+        public async Task<IActionResult> AcceptAdoptableCatForm(SearchFormDTO catAdoptionForm, [FromHeader] string Authorization)
         {
 
             try {
                 // Custom way of checking for if a signed out token is being used to log in
-                var tokenAuthorization = Request.Headers[HeaderNames.Authorization].First();
+                var tokenAuthorization = Authorization;
                 if (!_tokenService.isTokenActive(tokenAuthorization)){
                     ResponseDTO responseDTOUnauthorized = new ResponseDTO() {
                         Status= 401,
@@ -316,7 +328,7 @@ namespace API.Controllers
             
                 // Fetch the ID from the form and see if a matching form exists in the database
                 // As well, check to make sure the form is not already Accepted or Denied
-                CatAdoptionForm? catAdoptionFormFromDatabase = _database.CatAdoptionForms.Include(x => x.Cat)
+                CatAdoptionForm? catAdoptionFormFromDatabase = _database.GetCatAdoptionFormsAsList(true)
                     .FirstOrDefault(x => x.Id.ToString().ToLower().Equals(catAdoptionForm.Id.ToString().ToLower()));
                 if (catAdoptionFormFromDatabase == null){
                     ResponseDTO responseDTONotFound = new ResponseDTO() {
@@ -377,12 +389,12 @@ namespace API.Controllers
         [Authorize]
         [Authorize("AdminPolicy")]
         [HttpPost("denyAdoptableCatForm")]
-        public IActionResult DenyAdoptableCatForm(SearchFormDTO catAdoptionForm)
+        public IActionResult DenyAdoptableCatForm(SearchFormDTO catAdoptionForm, [FromHeader] string Authorization)
         {
 
             try {
                 // Custom way of checking for if a signed out token is being used to log in
-                var tokenAuthorization = Request.Headers[HeaderNames.Authorization].First();
+                var tokenAuthorization = Authorization;
                 if (!_tokenService.isTokenActive(tokenAuthorization)){
                     ResponseDTO responseDTOUnauthorized = new ResponseDTO() {
                         Status= 401,
@@ -393,7 +405,7 @@ namespace API.Controllers
 
                 // Fetch the ID from the form and see if a matching form exists in the database
                 // As well, check to make sure the form is not already Accepted or Denied
-                CatAdoptionForm? catAdoptionFormFromDatabase = _database.CatAdoptionForms.Include(x => x.Cat)
+                CatAdoptionForm? catAdoptionFormFromDatabase = _database.GetCatAdoptionFormsAsList(true)
                     .FirstOrDefault(x => x.Id.ToString().ToLower().Equals(catAdoptionForm.Id.ToString().ToLower()));
                 if (catAdoptionFormFromDatabase == null){
                     ResponseDTO responseDTONotFound = new ResponseDTO() {
@@ -456,11 +468,11 @@ namespace API.Controllers
         [Authorize]
         [Authorize("AdminPolicy")]
         [HttpGet("getNewCatsUpForAdoptionForms")]
-        public IActionResult GetNewCatsUpForAdoptionForms() {
+        public IActionResult GetNewCatsUpForAdoptionForms([FromHeader] string Authorization) {
 
             try {
                 // Custom way of checking for if a signed out token is being used to log in
-                var tokenAuthorization = Request.Headers[HeaderNames.Authorization].First();
+                var tokenAuthorization = Authorization;
                 if (!_tokenService.isTokenActive(tokenAuthorization)){
                     ResponseDTO responseDTOUnauthorized = new ResponseDTO() {
                         Status= 401,
@@ -470,7 +482,7 @@ namespace API.Controllers
                 }
 
                 // Fetches all new cats up for adoption forms from the database
-                IEnumerable<CatPutUpForAdoptionForm> catAdoptionForms = _database.CatPutUpForAdoptionForms.Include(x => x.Cat).Where(x => x.FormStatus.Equals(FormStatus.New));
+                IEnumerable<CatPutUpForAdoptionForm> catAdoptionForms = _database.GetCatPutUpForAdoptionFormsAsList(true).Where(x => x.FormStatus.Equals(FormStatus.New));
                 ResponseDTO responseDTOOk = new ResponseDTO() {
                     Status= 200,
                     Message= "Successfully fetched New Cats Up For Adoption Forms!",
@@ -492,11 +504,11 @@ namespace API.Controllers
         [Authorize]
         [Authorize("AdminPolicy")]
         [HttpGet("getAcceptedCatsUpForAdoptionForms")]
-        public IActionResult GetAcceptedCatsUpForAdoptionForms() {
+        public IActionResult GetAcceptedCatsUpForAdoptionForms([FromHeader] string Authorization) {
 
             try {
                 // Custom way of checking for if a signed out token is being used to log in
-                var tokenAuthorization = Request.Headers[HeaderNames.Authorization].First();
+                var tokenAuthorization = Authorization;
                 if (!_tokenService.isTokenActive(tokenAuthorization)){
                     ResponseDTO responseDTOUnauthorized = new ResponseDTO() {
                         Status= 401,
@@ -506,7 +518,7 @@ namespace API.Controllers
                 }
 
                 // Fetches all accepted cats up for adoption forms from the database
-                IEnumerable<CatPutUpForAdoptionForm> catAdoptionForms = _database.CatPutUpForAdoptionForms.Include(x => x.Cat).Where(x => x.FormStatus.Equals(FormStatus.Accepted));
+                IEnumerable<CatPutUpForAdoptionForm> catAdoptionForms = _database.GetCatPutUpForAdoptionFormsAsList(true).Where(x => x.FormStatus.Equals(FormStatus.Accepted));
                 ResponseDTO responseDTOOk = new ResponseDTO() {
                     Status= 200,
                     Message= "Successfully fetched Accepted Cats Up For Adoption Forms!",
@@ -528,10 +540,10 @@ namespace API.Controllers
         [Authorize]
         [Authorize("AdminPolicy")]
         [HttpGet("getDeniedCatsUpForAdoptionForms")]
-        public IActionResult GetDeniedCatsUpForAdoptionForms() {
+        public IActionResult GetDeniedCatsUpForAdoptionForms([FromHeader] string Authorization) {
             try {
                 // Custom way of checking for if a signed out token is being used to log in
-                var tokenAuthorization = Request.Headers[HeaderNames.Authorization].First();
+                var tokenAuthorization = Authorization;
                 if (!_tokenService.isTokenActive(tokenAuthorization)){
                     ResponseDTO responseDTOUnauthorized = new ResponseDTO() {
                         Status= 401,
@@ -541,7 +553,7 @@ namespace API.Controllers
                 }
 
                 // Fetches all denied cats up for adoption forms from the database
-                IEnumerable<CatPutUpForAdoptionForm> catAdoptionForms = _database.CatPutUpForAdoptionForms.Include(x => x.Cat).Where(x => x.FormStatus.Equals(FormStatus.Denied));
+                IEnumerable<CatPutUpForAdoptionForm> catAdoptionForms = _database.GetCatPutUpForAdoptionFormsAsList(true).Where(x => x.FormStatus.Equals(FormStatus.Denied));
                 ResponseDTO responseDTOOk = new ResponseDTO() {
                     Status= 200,
                     Message= "Successfully fetched Denied Cats Up For Adoption Forms!",
@@ -565,11 +577,11 @@ namespace API.Controllers
         [Authorize]
         [Authorize("AdminPolicy")]
         [HttpPost("acceptCatUpForAdoptionForm")]
-        public IActionResult AcceptCatUpForAdoptionForm(SearchFormDTO catPutUpForAdoptionForm)
+        public IActionResult AcceptCatUpForAdoptionForm(SearchFormDTO catPutUpForAdoptionForm, [FromHeader] string Authorization)
         {
             try {
                 // Custom way of checking for if a signed out token is being used to log in
-                var tokenAuthorization = Request.Headers[HeaderNames.Authorization].First();
+                var tokenAuthorization = Authorization;
                 if (!_tokenService.isTokenActive(tokenAuthorization)){
                     ResponseDTO responseDTOUnauthorized = new ResponseDTO() {
                         Status= 401,
@@ -580,8 +592,7 @@ namespace API.Controllers
 
                 // Fetch the ID from the form and see if a matching form exists in the database
                 // As well, check to make sure the form is not already Accepted or Denied
-                CatPutUpForAdoptionForm? catPutUpForAdoptionFormFromDatabase = _database.CatPutUpForAdoptionForms
-                    .Include(x => x.Cat).FirstOrDefault(x => x.Id.ToString().ToLower().Equals(catPutUpForAdoptionForm.Id.ToString().ToLower()));
+                CatPutUpForAdoptionForm? catPutUpForAdoptionFormFromDatabase = _database.GetCatPutUpForAdoptionFormsAsList(true).FirstOrDefault(x => x.Id.ToString().ToLower().Equals(catPutUpForAdoptionForm.Id.ToString().ToLower()));
                 if (catPutUpForAdoptionFormFromDatabase == null){
                     ResponseDTO responseDTONotFound = new ResponseDTO() {
                         Status= 404,
@@ -641,11 +652,11 @@ namespace API.Controllers
         [Authorize]
         [Authorize("AdminPolicy")]
         [HttpPost("denyCatUpForAdoptionForm")]
-        public IActionResult DenyCatUpForAdoptionForm(SearchFormDTO catPutUpForAdoptionForm)
+        public IActionResult DenyCatUpForAdoptionForm(SearchFormDTO catPutUpForAdoptionForm, [FromHeader] string Authorization)
         {
             try {
                 // Custom way of checking for if a signed out token is being used to log in
-                var tokenAuthorization = Request.Headers[HeaderNames.Authorization].First();
+                var tokenAuthorization = Authorization;
                 if (!_tokenService.isTokenActive(tokenAuthorization)){
                     ResponseDTO responseDTOUnauthorized = new ResponseDTO() {
                         Status= 401,
@@ -656,8 +667,7 @@ namespace API.Controllers
 
                 // Fetch the ID from the form and see if a matching form exists in the database
                 // As well, check to make sure the form is not already Accepted or Denied
-                CatPutUpForAdoptionForm? catPutUpForAdoptionFormFromDatabase = _database.CatPutUpForAdoptionForms
-                    .Include(x => x.Cat).FirstOrDefault(x => x.Id.ToString().ToLower().Equals(catPutUpForAdoptionForm.Id.ToString().ToLower()));
+                CatPutUpForAdoptionForm? catPutUpForAdoptionFormFromDatabase = _database.GetCatPutUpForAdoptionFormsAsList(true).FirstOrDefault(x => x.Id.ToString().ToLower().Equals(catPutUpForAdoptionForm.Id.ToString().ToLower()));
                 if (catPutUpForAdoptionFormFromDatabase == null){
                     ResponseDTO responseDTONotFound = new ResponseDTO() {
                         Status= 404,

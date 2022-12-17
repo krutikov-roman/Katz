@@ -7,15 +7,9 @@
 
 
 function getAvailableCats() {
-    // let bearer = localStorage.getItem("bear")
-    // if (bearer == null || bearer == ""){
-    //     alert("No login stored, please log in first!")
-    //     return;
-    // }
     fetch(apiUrl + "api/admin/GetAcceptedCatsUpForAdoptionForms", {
         method: "GET",
         headers: {
-            // "Authorization": "Bearer " + bearer,
             "Content-Type": "application/json; charset=utf-8"
         }
     })

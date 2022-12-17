@@ -49,17 +49,20 @@ namespace API.Controllers
             }
         }
 
-        [HttpPut("requestCatForAdoption")]
+        [HttpPost("requestCatForAdoption")]
         public async Task<IActionResult> CreateCatForAdoptionAsync(CatPutUpForAdoptionForm requestCatForAdoptionForm)
         {
             try
             {
                 requestCatForAdoptionForm.FormStatus = FormStatus.New;
 
+                Cat cat = requestCatForAdoptionForm.Cat;
+                cat.CatStatus = CatStatus.New;
+
                 ResponseDTO responseDTOOk = new ResponseDTO()
                 {
                     Status = 200,
-                    Message = "Successfully fetched adoptable cats",
+                    Message = "Successfully sent the request to put a cat up for adoption",
                     Data = requestCatForAdoptionForm
                 };
 
@@ -80,5 +83,52 @@ namespace API.Controllers
                 return BadRequest(responseDTOError);
             }
         }
+
+        [HttpPost("requestToAdoptCat")]
+        public async Task<IActionResult> AdoptCatAsync(CatAdoptionForm adoptionForm)
+        {
+            try
+            {
+                adoptionForm.FormStatus = FormStatus.New;
+
+                Cat cat = adoptionForm.Cat;
+                if (cat.CatStatus != CatStatus.WaitingForAdoption)
+                {
+                    ResponseDTO responseDTOError = new ResponseDTO
+                    {
+                        Status = 400,
+                        Message = "Cat is not adoptable",
+                    };
+
+                    return BadRequest(responseDTOError);
+                }
+
+                ResponseDTO responseDTOOk = new ResponseDTO
+                {
+                    Status = 200,
+                    Message = "Successfully sent the request to adopt the cat",
+                    Data = adoptionForm
+                };
+
+                _database.GetCatAdoptionFormsAsList(true).Add(adoptionForm);
+                await _database.SaveChangesAsync();
+
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                ResponseDTO responseDTOError = new ResponseDTO
+                {
+                    Status = 400,
+                    Message = "An unexpected server error occurred",
+                    Errors = e
+                };
+
+                return BadRequest(responseDTOError);
+            }
+        }
+
+        //[HttpGet("putCatUpForAdoption")]
+        //[HttpGet("adoptACat")]
     }
 }

@@ -19,7 +19,7 @@
     <script src="../javascript/script.js"></script>
     <script src="../javascript/formscript.js"></script>
 
-    <form>
+    <form id="adoptCatRequest">
         <label>Your Name:</label>
         <input type="text" name="ownerName" placeholder="Your Name">
         <label>Email:</label>
@@ -28,7 +28,7 @@
         <select name="cats" id="catSelection">
             <option value="">Select Cat</option>
         </select>
-        <button type="submit">Submit Adoption</button>
+        <button type="submit" onclick="adoptCat(adoptCatRequest)">Submit Adoption</button>
     </form>
 </body>
 

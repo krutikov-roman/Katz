@@ -41,6 +41,22 @@ async function createCatForAdoption(catAdoptionRequest) {
     })
 }
 
+async function adoptCat(adoptCatRequest) {
+    await fetch(apiUrl + "api/forms/requestToAdoptCat", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json; charset=utf-8"
+        },
+        data: new FormData(adoptCatRequest)
+    })
+    .then(response => response.json())
+    .then(response => {
+        if (response.status != 200) {
+            alert(response.message)
+        }
+    })
+}
+
 function addSelection(data) {
     data.forEach(item => {
         addItem(item)

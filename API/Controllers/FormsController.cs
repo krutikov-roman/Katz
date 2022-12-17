@@ -14,7 +14,7 @@ namespace API.Controllers
     public class FormsController : ControllerBase
     {
         private Database _database;
-        
+
         public FormsController(Database database)
         {
             _database = database;
@@ -25,11 +25,12 @@ namespace API.Controllers
         {
             try
             {
-                IEnumerable<Cat> cats = _database.Cats.Where(c => c.CatStatus.Equals(CatStatus.WaitingForAdoption));
+                IEnumerable<Cat> cats = _database.GetCatsAsList().Where(c => c.CatStatus.Equals(CatStatus.WaitingForAdoption));
 
-                ResponseDTO responseDTOOk = new ResponseDTO() {
-                    Status= 200,
-                    Message= "Successfully fetched adoptable cats",
+                ResponseDTO responseDTOOk = new ResponseDTO()
+                {
+                    Status = 200,
+                    Message = "Successfully fetched adoptable cats",
                     Data = cats
                 };
 
@@ -37,11 +38,45 @@ namespace API.Controllers
             }
             catch (Exception e)
             {
-                ResponseDTO responseDTOError = new ResponseDTO {
+                ResponseDTO responseDTOError = new ResponseDTO
+                {
                     Status = 400,
                     Message = "An unexpected server error occurred",
                     Errors = e
                 };
+
+                return BadRequest(responseDTOError);
+            }
+        }
+
+        [HttpPut("requestCatForAdoption")]
+        public async Task<IActionResult> CreateCatForAdoptionAsync(CatPutUpForAdoptionForm requestCatForAdoptionForm)
+        {
+            try
+            {
+                requestCatForAdoptionForm.FormStatus = FormStatus.New;
+
+                ResponseDTO responseDTOOk = new ResponseDTO()
+                {
+                    Status = 200,
+                    Message = "Successfully fetched adoptable cats",
+                    Data = requestCatForAdoptionForm
+                };
+
+                _database.GetCatPutUpForAdoptionFormsAsList(true).Add(requestCatForAdoptionForm);
+                await _database.SaveChangesAsync();
+
+                return Ok(responseDTOOk);
+            }
+            catch (Exception e)
+            {
+                ResponseDTO responseDTOError = new ResponseDTO
+                {
+                    Status = 400,
+                    Message = "An unexpected server error occurred",
+                    Errors = e
+                };
+
                 return BadRequest(responseDTOError);
             }
         }

@@ -16,13 +16,18 @@
 
 <body>
     <script src="../javascript/script.js"></script>
+    <script src="../javascript/formscript.js"></script>
 
-    <form>
+    <form id="catAdoptionRequest">
+        <label>Your Name:</label>
+        <input type="text" name="ownerName" placeholder="Your Name">
+        <label>Email</label>
+        <input type="text" name="ownerEmail" placeholder="Email">
         <label>Cat Name:</label>
-        <input type="text" id="name" placeholder="Name">
-        <label>Description</label>
-        <textarea id="description" placeholder="Description"></textarea>
-        <button type="submit">Submit Cat</button>
+        <input type="text" id="name" placeholder="Cat Name">
+        <label>Cat Description:</label>
+        <textarea id="description" placeholder="Cat Description"></textarea>
+        <button type="submit" onclick="createCatForAdoption(catAdoptionRequest)">Submit Cat</button>
     </form>
 </body>
 </html>

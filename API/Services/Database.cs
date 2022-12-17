@@ -16,13 +16,42 @@ using API.Models;
 
 namespace API.Services
 {
-    public class Database: DbContext
+    public class Database: DbContext, IListableDatabase
     {
-        public DbSet<Cat> Cats {get; set;}
+        private DbSet<Cat> Cats {get; set;}
 
-        public DbSet<CatAdoptionForm> CatAdoptionForms {get; set;}
+        private DbSet<CatAdoptionForm> CatAdoptionForms {get; set;}
 
-        public DbSet<CatPutUpForAdoptionForm> CatPutUpForAdoptionForms {get; set;}
+        private DbSet<CatPutUpForAdoptionForm> CatPutUpForAdoptionForms {get; set;}
+
+        public List<CatAdoptionForm> GetCatAdoptionFormsAsList(bool includeCat)
+        {
+            if (includeCat){
+                return CatAdoptionForms.Include(x => x.Cat).ToList();
+            }
+            return CatAdoptionForms.ToList();
+        }
+
+        public List<CatPutUpForAdoptionForm> GetCatPutUpForAdoptionFormsAsList(bool includeCat)
+        {
+            if (includeCat){
+                return CatPutUpForAdoptionForms.Include(x => x.Cat).ToList();
+            }
+            return CatPutUpForAdoptionForms.ToList();
+        }
+
+        public Task SaveChangesAsync() {
+            return base.SaveChangesAsync();
+        }
+
+        public void SaveChanges() {
+            base.SaveChanges();
+        }
+
+        public List<Cat> GetCatsAsList()
+        {
+            return Cats.ToList();
+        }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

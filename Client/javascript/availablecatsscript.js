@@ -12,7 +12,7 @@ function getAvailableCats() {
     //     alert("No login stored, please log in first!")
     //     return;
     // }
-    fetch(apiUrl + "api/form/getAdoptableCats", {
+    fetch(apiUrl + "api/forms/getAdoptableCats", {
         method: "GET",
         headers: {
             // "Authorization": "Bearer " + bearer,

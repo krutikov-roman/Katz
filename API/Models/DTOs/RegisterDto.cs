@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace API.Models.DTOs
 {
-    public class RegisterDto
+    public class RegisterDTO
     {
         public string Email { get; set; }
         public string Password { get; set; }

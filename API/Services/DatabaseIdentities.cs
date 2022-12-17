@@ -17,13 +17,17 @@ using API.Models;
 
 namespace API.Services
 {
-    public class DatabaseIdentities : IdentityDbContext<AppUser>
+    public class DatabaseIdentities : IdentityDbContext<AppUser>, IListableDatabaseIdentities
     {
-        public DbSet<LoggedInToken> LoggedInTokens {get; set;}
+        private DbSet<LoggedInToken> LoggedInTokens {get; set;}
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlite("Filename=DatabaseIdentities.db");
+        }
+
+        public List<LoggedInToken> GetListOfLoggedInTokens() {
+            return LoggedInTokens.ToList();
         }
     }
 }

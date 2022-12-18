@@ -43,8 +43,7 @@ namespace TestingProject
             };
             databaseServiceMock.Setup(m => m.GetCatsAsList()).Returns(cats);
 
-            // Create the controller, apply mocking objects, and attempt to get the expected result
-            CatController cat = new CatController();
+            CatController cat = new CatController(null);
             OkObjectResult result = (OkObjectResult)cat.GetCatsAvailableForAdoption();
             ResponseDTO resultingResponseDto = (ResponseDTO) result.Value;
             List<Cat> resultingCatList = ((IEnumerable<Cat>)resultingResponseDto.Data).ToList();
@@ -85,7 +84,7 @@ namespace TestingProject
             databaseServiceMock.Setup(m => m.GetCatsAsList()).Returns(cats);
 
             // Create the controller, apply mocking objects, and attempt to get the expected result
-            CatController cat = new CatController();
+            CatController cat = new CatController(null);
             OkObjectResult result = (OkObjectResult)cat.GetCatsAvailableForAdoption();
             ResponseDTO resultingResponseDto = (ResponseDTO) result.Value;
             List<Cat> resultingCatList = ((IEnumerable<Cat>)resultingResponseDto.Data).ToList();
@@ -117,7 +116,7 @@ namespace TestingProject
             };
             databaseServiceMock.Setup(m => m.GetCatsAsList()).Returns(cats);
 
-            CatController cat = new CatController();
+            CatController cat = new CatController(null);
             OkObjectResult result = (OkObjectResult)cat.GetCatsAvailableForAdoption();
             ResponseDTO resultingResponseDto = (ResponseDTO) result.Value;
             List<Cat> resultingCatList = ((IEnumerable<Cat>)resultingResponseDto.Data).ToList();

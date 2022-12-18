@@ -17,9 +17,10 @@ Roman Krutikov
 	- Signing Out
 	- Checking if a user is admin
  - Testing
-        - TestAdminController
+	- TestAdminController
  - Others
 	- Initial creation of project and setup
+	- TokenService
 	- Managing GitHub repo
 
 Karen James

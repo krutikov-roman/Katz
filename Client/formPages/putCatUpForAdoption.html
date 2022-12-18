@@ -9,21 +9,52 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/style.css">
-    <title>Put Cat up for Aboption</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
     <link href="../javascript/bootstrap/js/bootstrap.min.js" rel="stylesheet">
+    <title>Client</title>
 </head>
 
 <body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+
+                            <a href="../index.html">Home</a> &nbsp&nbsp
+
+                            <a href="../adminPages/admin.html">Admin</a>  &nbsp&nbsp
+
+                            <a href="../login.html">Login</a> &nbsp&nbsp  
+
+                            <a href="../userPages/availableCatsForAdoptionList.html">View Available Cats</a> &nbsp&nbsp
+
+                            <a href="../formPages/adoptCat.html">Adopt a Cat</a> &nbsp&nbsp
+
+                            <a href="../formPages/putCatUpForAdoption.html">Put a Cat Up For Adoption</a> &nbsp&nbsp
+
+                            <a href="../signout.html">Signout</a> &nbsp&nbsp
+                
+                    </ul>
+                </br>
+
+            </div>
+        </nav>
+    </header>
+
     <script src="../javascript/script.js"></script>
     <script src="../javascript/formscript.js"></script>
 
     <div>
-        Your Name: <input type="text" id="ownerName" placeholder="Your Name">
+        <h1>Put Cat Up For Adoption</h1>
+        <br>
+    </div>
+
+    <div>
+        Your Name: <input type="text" id="ownerName" placeholder="Your Name"> <br>
         Email: <input type="text" id="ownerEmail" placeholder="Your Email"> <br>
-        Cat Name: <input type="text" id="name" placeholder="Cat Name">
-        Cat Description: <textarea id="description" placeholder="Cat Description"></textarea>
-        <button onclick="createCatForAdoption()">Submit Cat</button>
+        Cat Name: <input type="text" id="name" placeholder="Cat Name"> <br>
+        Cat Description: <textarea id="description" placeholder="Cat Description"></textarea> <br>
+        <button class="btn btn-lg btn-primary" onclick="createCatForAdoption()">Submit Cat</button>
     </div>
 </body>
 </html>

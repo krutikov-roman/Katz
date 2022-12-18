@@ -34,7 +34,7 @@ namespace API.Controllers
                     Data = cats
                 };
 
-                return Ok(cats);
+                return Ok(responseDTOOk);
             }
             catch (Exception e)
             {

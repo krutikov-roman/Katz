@@ -67,9 +67,7 @@ function createCatForAdoption() {
     })
         .then(response => response.json())
         .then(response => {
-            if (response.status != 200) {
-                alert(response.message)
-            }
+            alert(response.message)
         })
 }
 
@@ -98,7 +96,7 @@ function adoptCat() {
     }
 
     console.log(adoptCatRequest);
-    
+
     fetch(apiUrl + "api/forms/requestToAdoptCat", {
         method: "POST",
         headers: {
@@ -108,10 +106,7 @@ function adoptCat() {
     })
         .then(response => response.json())
         .then(response => {
-            console.log(response);
-            if (response.status != 200) {
-                alert(response.message)
-            }
+            alert(response.message)
         })
 }
 

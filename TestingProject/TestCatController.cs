@@ -23,19 +23,22 @@ namespace TestingProject
 {
     public class TestCatController
     {
+
         [Fact]
         public void GetCatsAvailableForAdoption_GetFrom2Total_Return1MatchingResult()
         {
+            Guid id = Guid.NewGuid();
+
             Mock<IListableDatabase> databaseServiceMock = new Mock<IListableDatabase>();
             List<Cat> cats = new List<Cat> {
                 new Cat {
-                    Id = new Guid(),
+                    Id = id,
                     Name = "TestName1",
                     Description = "Desc1",
                     CatStatus = CatStatus.WaitingForAdoption
                 },
                 new Cat {
-                    Id = new Guid(),
+                    Id = Guid.NewGuid(),
                     Name = "TestName2",
                     Description = "Desc2",
                     CatStatus = CatStatus.Denied
@@ -43,21 +46,21 @@ namespace TestingProject
             };
             databaseServiceMock.Setup(m => m.GetCatsAsList()).Returns(cats);
 
-            CatController cat = new CatController(null);
-            OkObjectResult result = (OkObjectResult)cat.GetCatsAvailableForAdoption();
+            CatController catController = new CatController(null,databaseServiceMock.Object);
+            OkObjectResult result = (OkObjectResult)catController.GetCatsAvailableForAdoption();
             ResponseDTO resultingResponseDto = (ResponseDTO) result.Value;
             List<Cat> resultingCatList = ((IEnumerable<Cat>)resultingResponseDto.Data).ToList();
 
             List<Cat> catsExpected = new List<Cat> {
                 new Cat {
-                    Id = new Guid(),
+                    Id = id,
                     Name = "TestName1",
                     Description = "Desc1",
                     CatStatus = CatStatus.WaitingForAdoption
                 },
             };
             bool catsInListMatch = resultingCatList.Count.Equals(catsExpected.Count) &&
-                                resultingCatList[0].Id.Equals(catsExpected[0].Id);
+                resultingCatList[0].Id.Equals(catsExpected[0].Id);
 
             Assert.True(catsInListMatch);
         }
@@ -66,16 +69,18 @@ namespace TestingProject
         [Fact]
         public void GetCatsAvailableForAdoption_GetFrom2Total_Return0MatchingResult()
         {
+            Guid id = Guid.NewGuid();
+
             Mock<IListableDatabase> databaseServiceMock = new Mock<IListableDatabase>();
             List<Cat> cats = new List<Cat> {
                 new Cat {
-                    Id = new Guid(),
+                    Id = Guid.NewGuid(),
                     Name = "TestName1",
                     Description = "Desc1",
                     CatStatus = CatStatus.Adopted
                 },
                 new Cat {
-                    Id = new Guid(),
+                    Id = Guid.NewGuid(),
                     Name = "TestName2",
                     Description = "Desc2",
                     CatStatus = CatStatus.Denied
@@ -83,13 +88,11 @@ namespace TestingProject
             };
             databaseServiceMock.Setup(m => m.GetCatsAsList()).Returns(cats);
 
-            // Create the controller, apply mocking objects, and attempt to get the expected result
-            CatController cat = new CatController(null);
+            CatController cat = new CatController(null,databaseServiceMock.Object);
             OkObjectResult result = (OkObjectResult)cat.GetCatsAvailableForAdoption();
             ResponseDTO resultingResponseDto = (ResponseDTO) result.Value;
             List<Cat> resultingCatList = ((IEnumerable<Cat>)resultingResponseDto.Data).ToList();
 
-            // Define the expected result and check to see if the expected output matches the actual output
             List<Cat> catsExpected = new List<Cat> ();
             bool catsInListMatch = resultingCatList.Count.Equals(catsExpected.Count);
 
@@ -99,16 +102,20 @@ namespace TestingProject
         [Fact]
         public void GetCatsAvailableForAdoption_GetFrom2Total_Return2MatchingResult()
         {
+            Guid id = Guid.NewGuid();
+            Guid id2 = Guid.NewGuid();
+
+
             Mock<IListableDatabase> databaseServiceMock = new Mock<IListableDatabase>();
             List<Cat> cats = new List<Cat> {
                 new Cat {
-                    Id = new Guid(),
+                    Id = id,
                     Name = "TestName1",
                     Description = "Desc1",
                     CatStatus = CatStatus.WaitingForAdoption
                 },
                 new Cat {
-                    Id = new Guid(),
+                    Id = id2,
                     Name = "TestName2",
                     Description = "Desc2",
                     CatStatus = CatStatus.WaitingForAdoption
@@ -116,30 +123,30 @@ namespace TestingProject
             };
             databaseServiceMock.Setup(m => m.GetCatsAsList()).Returns(cats);
 
-            CatController cat = new CatController(null);
+            CatController cat = new CatController(null,databaseServiceMock.Object);
             OkObjectResult result = (OkObjectResult)cat.GetCatsAvailableForAdoption();
             ResponseDTO resultingResponseDto = (ResponseDTO) result.Value;
             List<Cat> resultingCatList = ((IEnumerable<Cat>)resultingResponseDto.Data).ToList();
 
             List<Cat> catsExpected = new List<Cat> {
                 new Cat {
-                    Id = new Guid(),
+                    Id = id,
                     Name = "TestName1",
                     Description = "Desc1",
                     CatStatus = CatStatus.WaitingForAdoption
                 },
                 new Cat {
-                    Id = new Guid(),
+                    Id = id2,
                     Name = "TestName2",
                     Description = "Desc2",
                     CatStatus = CatStatus.WaitingForAdoption
                 }
             };
-            bool formsMatch =  resultingCatList.Count.Equals(catsExpected.Count) &&
+            bool catsInListMatch =  resultingCatList.Count.Equals(catsExpected.Count) &&
                                 resultingCatList[0].Id.Equals(catsExpected[0].Id) && 
                                 resultingCatList[1].Id.Equals(catsExpected[1].Id);
 
-            Assert.True(formsMatch);
+            Assert.True(catsInListMatch);
         }
     }
 }

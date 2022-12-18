@@ -13,14 +13,21 @@ namespace API.Controllers
     [Route("api/[controller]")]
     public class CatController : ControllerBase
     {
-        private Database _database;
+        private IListableDatabase _database;
 
-        public CatController(Database database)
+        public CatController(Database database, IListableDatabase iListableDatabase=null)
         {
             _database = database;
+
+            if (iListableDatabase != null)
+            {
+                _database = iListableDatabase;
+            }
+
+
         }
 
-        [HttpGet("getAdoptableCats")]
+        [HttpGet("GetCatsAvailableForAdoption")]
         public IActionResult GetCatsAvailableForAdoption()
         {
             try

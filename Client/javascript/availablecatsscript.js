@@ -7,7 +7,7 @@
 
 
 function getAvailableCats() {
-    fetch(apiUrl + "api/Cat/GetCatsAvailableForAdoption", {
+    fetch(apiUrl + "api/Cat/getAdoptableCats", {
         method: "GET",
         headers: {
             "Content-Type": "application/json; charset=utf-8"

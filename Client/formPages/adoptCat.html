@@ -19,17 +19,13 @@
     <script src="../javascript/script.js"></script>
     <script src="../javascript/formscript.js"></script>
 
-    <form>
-        <label>Your Name:</label>
-        <input type="text" name="ownerName" placeholder="Your Name">
-        <label>Email:</label>
-        <input type="text" name="ownerEmail" placeholder="Email">
-        <label>Select a Cat:</label>
-        <select name="cats" id="catSelection">
-            <option value="">Select Cat</option>
+    <div>
+        Your Name: <input type="text" id="ownerName" placeholder="Your Name">
+        Email: <input type="text" id="ownerEmail" placeholder="Your Email"> <br>
+        Select a Cat: <select id="catSelection">
         </select>
-        <button type="submit">Submit Adoption</button>
-    </form>
+        <button onclick="adoptCat()">Submit Adoption</button>
+    </div>
 </body>
 
 </html>

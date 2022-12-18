@@ -17,5 +17,9 @@ namespace API.Services
     public interface IListableDatabaseIdentities
     {
         public List<LoggedInToken> GetListOfLoggedInTokens();
+
+        public void AddTokenToLoggedInTokens(LoggedInToken token);
+
+        public void RemoveTokenFromLoggedInTokens(LoggedInToken token);
     }
 }

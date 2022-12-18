@@ -29,6 +29,16 @@ namespace API.Services
         public List<LoggedInToken> GetListOfLoggedInTokens() {
             return LoggedInTokens.ToList();
         }
+
+        public void AddTokenToLoggedInTokens(LoggedInToken token)
+        {
+            LoggedInTokens.Add(token);
+        }
+
+        public void RemoveTokenFromLoggedInTokens(LoggedInToken token)
+        {
+            LoggedInTokens.Remove(token);
+        }
     }
 }
 

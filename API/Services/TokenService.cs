@@ -61,7 +61,7 @@ namespace API.Services
                     IpAddress = ipAddress,
                     HashedToken = tokenHashed
                 };
-                _databaseIdentities.GetListOfLoggedInTokens().Add(databaseToken);
+                _databaseIdentities.AddTokenToLoggedInTokens(databaseToken);
             }
             else {
                 databaseToken.HashedToken = tokenHashed;
@@ -76,7 +76,7 @@ namespace API.Services
             string tokenHashed = ComputeSha256Hash(token.ToString());
             LoggedInToken? databaseToken = _databaseIdentities.GetListOfLoggedInTokens().FirstOrDefault(x => x.HashedToken.Equals(tokenHashed));
             if (databaseToken != null){
-                _databaseIdentities.GetListOfLoggedInTokens().Remove(databaseToken);
+                _databaseIdentities.RemoveTokenFromLoggedInTokens(databaseToken);
                 _databaseIdentities.SaveChanges();
             }
         }

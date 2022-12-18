@@ -20,13 +20,7 @@ function getAcceptedAdoptableCatForms() {
             "Content-Type": "application/json; charset=utf-8"
         }
     })
-    .then(response => {
-        if (response.status == 403){
-            alert("You are not authorized to view this data!")
-            return;
-        }
-        response.json()
-    })
+    .then(response => response.json())
     .then(response => {
         if (response.status != 200){
             alert(response.message)
@@ -51,13 +45,7 @@ function getAcceptedCatsUpForAdoptionForms() {
             "Content-Type": "application/json; charset=utf-8"
         }
     })
-    .then(response => {
-        if (response.status == 403){
-            alert("You are not authorized to view this data!")
-            return;
-        }
-        response.json()
-    })
+    .then(response => response.json())
     .then(response => {
         if (response.status != 200){
             alert(response.message)
@@ -82,13 +70,7 @@ function getDeniedAdoptableCatForms() {
             "Content-Type": "application/json; charset=utf-8"
         }
     })
-    .then(response => {
-        if (response.status == 403){
-            alert("You are not authorized to view this data!")
-            return;
-        }
-        response.json()
-    })
+    .then(response => response.json())
     .then(response => {
         if (response.status != 200){
             alert(response.message)
@@ -113,13 +95,7 @@ function getDeniedCatsUpForAdoptionForms(){
             "Content-Type": "application/json; charset=utf-8"
         }
     })
-    .then(response => {
-        if (response.status == 403){
-            alert("You are not authorized to view this data!")
-            return;
-        }
-        response.json()
-    })
+    .then(response => response.json())
     .then(response => {
         if (response.status != 200){
             alert(response.message)
@@ -144,13 +120,7 @@ function getNewAdoptableCatForms(){
             "Content-Type": "application/json; charset=utf-8"
         }
     })
-    .then(response => {
-        if (response.status == 403){
-            alert("You are not authorized to view this data!")
-            return;
-        }
-        response.json()
-    })
+    .then(response => response.json())
     .then(response => {
         if (response.status != 200){
             alert(response.message)
@@ -176,13 +146,7 @@ function getNewCatsUpForAdoptionForms() {
             "Content-Type": "application/json; charset=utf-8"
         }
     })
-    .then(response => {
-        if (response.status == 403){
-            alert("You are not authorized to view this data!")
-            return;
-        }
-        response.json()
-    })
+    .then(response => response.json())
     .then(response => {
         if (response.status != 200){
             alert(response.message)

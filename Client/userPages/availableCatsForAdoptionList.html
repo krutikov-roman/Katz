@@ -1,7 +1,7 @@
 <!--
-    By: Roman Krutikov
+    By: Karen James
+    Description: This page displays list of cats available for adoption 
 
-    Description: This page is used to log out of an account (primarily used by admins)
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -23,15 +23,15 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
 
-                        <a href="./index.html">Home &nbsp&nbsp</a>
+                        <a href="../index.html">Home &nbsp&nbsp</a>
 
-                            <a href="./adminPages/admin.html">Admin &nbsp&nbsp</a> 
+                            <a href="../adminPages/admin.html">Admin &nbsp&nbsp</a> 
 
-                            <a href="./login.html">Login &nbsp</a> 
+                            <a href="../login.html">Login &nbsp</a> 
 
                             <a href="./userPages/availableCatsForAdoptionList.html">View Available Cats &nbsp&nbsp</a> 
 
-                            <a href="./signout.html">Signout</a> 
+                            <a href="../signout.html">Signout</a> 
                 
                     </ul>
             </div>
@@ -39,13 +39,33 @@
     </header>
 
 <body>
-    <script src="./javascript/script.js"></script>
-    <br>
-    <h1> Cat Adoption Signout! </h1>
-    <br>
-
-    <button onclick="trySignOut()">Sign out</button>
-
+    <script src="../javascript/script.js"></script>
+    <script src="../javascript/availablecatsscript.js"></script>
+    <div>
+        <h1>Cats Available for Adoption</h1>
+        <br>
+        <a href="../index.html">Home</a>
+        <br>
+        <a href="./admin.html">Admin Home</a>
+        <br>
+        <br>
+        <buton type="button" class="btn btn-lg btn-primary" onclick="getAvailableCats()">Click to Fetch</buton>
+        <br>
+    </div>
+    <div>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <td>Cat Name</td>
+                    <td>Description</td>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+            </tbody>
+            </div>
+    
+        </table>
+    </div>
 </body>
 
 </html>

@@ -26,5 +26,9 @@ namespace API.Services
         public void SaveChanges();
 
         public Task SaveChangesAsync();
+
+        public void AddToCatAdoptionForms(CatPutUpForAdoptionForm requestCatForAdoptionForm);
+
+        public void AddToAdoptCatForms(CatAdoptionForm requestAdoptCatForm);
     }
 }

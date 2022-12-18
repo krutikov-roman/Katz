@@ -34,7 +34,7 @@ namespace API.Controllers
                     Data = cats
                 };
 
-                return Ok(cats);
+                return Ok(responseDTOOk);
             }
             catch (Exception e)
             {
@@ -66,7 +66,7 @@ namespace API.Controllers
                     Data = requestCatForAdoptionForm
                 };
 
-                _database.GetCatPutUpForAdoptionFormsAsList(true).Add(requestCatForAdoptionForm);
+                _database.AddToCatAdoptionForms(requestCatForAdoptionForm);
                 await _database.SaveChangesAsync();
 
                 return Ok(responseDTOOk);
@@ -85,13 +85,21 @@ namespace API.Controllers
         }
 
         [HttpPost("requestToAdoptCat")]
-        public async Task<IActionResult> AdoptCatAsync(CatAdoptionForm adoptionForm)
+        public async Task<IActionResult> AdoptCatAsync(AdoptCatDto adoptionFormDto)
         {
             try
             {
-                adoptionForm.FormStatus = FormStatus.New;
+                Cat? cat = _database.GetCatsAsList().FirstOrDefault(c => c.Id.ToString().ToLower().Equals(adoptionFormDto.CatId.ToString().ToLower()))??null;
+                if (cat == null)
+                {
+                    ResponseDTO responseDTOError = new ResponseDTO
+                    {
+                        Status = 400,
+                        Message = "Cat is null",
+                    };
 
-                Cat cat = adoptionForm.Cat;
+                    return BadRequest(responseDTOError);
+                }
                 if (cat.CatStatus != CatStatus.WaitingForAdoption)
                 {
                     ResponseDTO responseDTOError = new ResponseDTO
@@ -103,6 +111,14 @@ namespace API.Controllers
                     return BadRequest(responseDTOError);
                 }
 
+                CatAdoptionForm adoptionForm = new CatAdoptionForm 
+                {
+                    FormStatus = FormStatus.New,
+                    OwnerName = adoptionFormDto.OwnerName,
+                    OwnerEmail = adoptionFormDto.OwnerEmail,
+                    Cat = cat
+                };
+
                 ResponseDTO responseDTOOk = new ResponseDTO
                 {
                     Status = 200,
@@ -110,10 +126,10 @@ namespace API.Controllers
                     Data = adoptionForm
                 };
 
-                _database.GetCatAdoptionFormsAsList(true).Add(adoptionForm);
+                _database.AddToAdoptCatForms(adoptionForm);
                 await _database.SaveChangesAsync();
 
-                return Ok();
+                return Ok(responseDTOOk);
             }
             catch (Exception e)
             {
@@ -127,8 +143,5 @@ namespace API.Controllers
                 return BadRequest(responseDTOError);
             }
         }
-
-        //[HttpGet("putCatUpForAdoption")]
-        //[HttpGet("adoptACat")]
     }
 }

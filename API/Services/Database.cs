@@ -53,6 +53,16 @@ namespace API.Services
             return Cats.ToList();
         }
 
+        public void AddToCatAdoptionForms(CatPutUpForAdoptionForm requestCatForAdoptionForm)
+        {
+            CatPutUpForAdoptionForms.Add(requestCatForAdoptionForm);
+        }
+
+         public void AddToAdoptCatForms (CatAdoptionForm requestAdoptCatForm)
+        {
+            CatAdoptionForms.Add(requestAdoptCatForm);
+        }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlite("Filename=Database.db");

@@ -1,0 +1,36 @@
+Responsibilites
+
+Roman Krutikov
+ - Admin Pages (AdminController), which include
+	- Getting New Adoptable Cat Forms
+	- Getting Accepted Adoptable Cat Forms
+	- Getting Denied Adoptable Cat Forms
+	- Getting New Cat Up For Adoption Forms
+	- Getting Accepted Cat Up For Adoption Forms
+	- Getting Denied Cat Up For Adoption Forms
+	- Accepting New Adoptable Cat Forms
+	- Denying New Adoptable Cat Forms
+	- Accepting New Cat Up For Adoption Forms
+	- Denying New Cats Up For Adoption Forms
+ - Login Pages, which include
+	- Logging In
+	- Signing Out
+	- Checking if a user is admin
+ - Testing
+        - TestAdminController
+ - Others
+	- Initial creation of project and setup
+	- Managing GitHub repo
+
+Karen James
+	- View list available cats (Cat Controller)
+	- Look of Frontend
+	- Testing
+   		- TestCatController
+
+Andreea-Alexandra Popa
+	- Form Controller
+		- PutCatUpForAdoptionForm
+		- CatAdoptionForm
+	- Testing
+		- TestFormController

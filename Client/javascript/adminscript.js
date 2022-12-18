@@ -258,13 +258,7 @@ function acceptOrDenyForm(url, formId){
         },
         body: JSON.stringify(form)
     })
-    .then(response => {
-        if (response.status == 403){
-            alert("You are not authorized to view this data!")
-            return
-        }
-        response.json()
-    })
+    .then(response => response.json())
     .then(response => {
         alert(response.message)
         document.getElementById("tableBody").innerHTML = ""

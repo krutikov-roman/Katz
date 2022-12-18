@@ -58,7 +58,7 @@ namespace API.Controllers
             }
         }
 
-        #region Test Methods
+        #region Testing Methods / Methods Outside Scope Of Project
 
         // Signs up a user (likely admin, but admin value set to false by default)
         [HttpPost("signup")]
@@ -329,7 +329,7 @@ namespace API.Controllers
                 // Fetch the ID from the form and see if a matching form exists in the database
                 // As well, check to make sure the form is not already Accepted or Denied
                 CatAdoptionForm? catAdoptionFormFromDatabase = _database.GetCatAdoptionFormsAsList(true)
-                    .FirstOrDefault(x => x.Id.ToString().ToLower().Equals(catAdoptionForm.Id.ToString().ToLower()));
+                    .FirstOrDefault(x => x.Id.ToString().ToLower().Equals(catAdoptionForm.Id.ToString().ToLower())) ?? null;
                 if (catAdoptionFormFromDatabase == null){
                     ResponseDTO responseDTONotFound = new ResponseDTO() {
                         Status= 404,
@@ -348,7 +348,7 @@ namespace API.Controllers
 
                 // Check to make sure the Cat from the form exists
                 // As well, check to make sure the Cat is not already Adopted, or needs processing, or is not sutable for adoption
-                Cat? catFromAdoptionFormFromDatabase = catAdoptionFormFromDatabase.Cat;
+                Cat? catFromAdoptionFormFromDatabase = catAdoptionFormFromDatabase.Cat ?? null;
                 if (catFromAdoptionFormFromDatabase == null){
                     ResponseDTO responseDTONotFound = new ResponseDTO() {
                         Status= 404,
@@ -406,7 +406,7 @@ namespace API.Controllers
                 // Fetch the ID from the form and see if a matching form exists in the database
                 // As well, check to make sure the form is not already Accepted or Denied
                 CatAdoptionForm? catAdoptionFormFromDatabase = _database.GetCatAdoptionFormsAsList(true)
-                    .FirstOrDefault(x => x.Id.ToString().ToLower().Equals(catAdoptionForm.Id.ToString().ToLower()));
+                    .FirstOrDefault(x => x.Id.ToString().ToLower().Equals(catAdoptionForm.Id.ToString().ToLower())) ?? null;
                 if (catAdoptionFormFromDatabase == null){
                     ResponseDTO responseDTONotFound = new ResponseDTO() {
                         Status= 404,
@@ -425,7 +425,7 @@ namespace API.Controllers
                 
                 // Check to make sure the Cat from the form exists
                 // As well, check to make sure the Cat is not already Adopted, or needs processing, or is not sutable for adoption
-                Cat? catFromAdoptionFormFromDatabase = catAdoptionFormFromDatabase.Cat;
+                Cat? catFromAdoptionFormFromDatabase = catAdoptionFormFromDatabase.Cat ?? null;
                 if (catFromAdoptionFormFromDatabase == null){
                     ResponseDTO responseDTONotFound = new ResponseDTO() {
                         Status= 404,
@@ -592,7 +592,8 @@ namespace API.Controllers
 
                 // Fetch the ID from the form and see if a matching form exists in the database
                 // As well, check to make sure the form is not already Accepted or Denied
-                CatPutUpForAdoptionForm? catPutUpForAdoptionFormFromDatabase = _database.GetCatPutUpForAdoptionFormsAsList(true).FirstOrDefault(x => x.Id.ToString().ToLower().Equals(catPutUpForAdoptionForm.Id.ToString().ToLower()));
+                CatPutUpForAdoptionForm? catPutUpForAdoptionFormFromDatabase = _database.GetCatPutUpForAdoptionFormsAsList(true)
+                    .FirstOrDefault(x => x.Id.ToString().ToLower().Equals(catPutUpForAdoptionForm.Id.ToString().ToLower())) ?? null;
                 if (catPutUpForAdoptionFormFromDatabase == null){
                     ResponseDTO responseDTONotFound = new ResponseDTO() {
                         Status= 404,
@@ -611,7 +612,7 @@ namespace API.Controllers
                 
                 // Check to make sure the Cat from the form exists
                 // As well, check to make sure the Cat is not already Adopted, or waiting to be adopted, or is not sutable for adoption
-                Cat? catFromAdoptionFormFromDatabase = catPutUpForAdoptionFormFromDatabase.Cat;
+                Cat? catFromAdoptionFormFromDatabase = catPutUpForAdoptionFormFromDatabase.Cat ?? null;
                 if (catFromAdoptionFormFromDatabase == null){
                     ResponseDTO responseDTONotFound = new ResponseDTO() {
                         Status= 404,
@@ -667,7 +668,8 @@ namespace API.Controllers
 
                 // Fetch the ID from the form and see if a matching form exists in the database
                 // As well, check to make sure the form is not already Accepted or Denied
-                CatPutUpForAdoptionForm? catPutUpForAdoptionFormFromDatabase = _database.GetCatPutUpForAdoptionFormsAsList(true).FirstOrDefault(x => x.Id.ToString().ToLower().Equals(catPutUpForAdoptionForm.Id.ToString().ToLower()));
+                CatPutUpForAdoptionForm? catPutUpForAdoptionFormFromDatabase = _database.GetCatPutUpForAdoptionFormsAsList(true)
+                    .FirstOrDefault(x => x.Id.ToString().ToLower().Equals(catPutUpForAdoptionForm.Id.ToString().ToLower())) ?? null;
                 if (catPutUpForAdoptionFormFromDatabase == null){
                     ResponseDTO responseDTONotFound = new ResponseDTO() {
                         Status= 404,
@@ -686,7 +688,7 @@ namespace API.Controllers
                 
                 // Check to make sure the Cat from the form exists
                 // As well, check to make sure the Cat is not already Adopted, or waiting to be adopted, or is not sutable for adoption
-                Cat? catFromAdoptionFormFromDatabase = catPutUpForAdoptionFormFromDatabase.Cat;
+                Cat? catFromAdoptionFormFromDatabase = catPutUpForAdoptionFormFromDatabase.Cat ?? null;
                 if (catFromAdoptionFormFromDatabase == null){
                     ResponseDTO responseDTONotFound = new ResponseDTO() {
                         Status= 404,

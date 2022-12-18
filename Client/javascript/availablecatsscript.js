@@ -38,7 +38,7 @@ function addItem(item) {
 
     const td1 = document.createElement("td");
     td1.innerHTML = item.description;
-    
+
     const tr = document.createElement("tr");
 
     tr.appendChild(td0);
